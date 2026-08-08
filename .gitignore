@@ -1,0 +1,22 @@
+# Environment
+.venv/
+
+#Python Cache
+__pycache__/
+*.pyc
+
+# Tests / Formatting
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# ML
+wandb/
+mlruns/
+mlartifacts/
+
+# Environment Variables
+.env
+
+# VSCode Config
+.vscode/
