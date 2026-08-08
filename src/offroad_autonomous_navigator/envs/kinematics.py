@@ -42,6 +42,4 @@ class BicycleModel:
         x_new = state.x + v_clamped * math.cos(theta_clamped) * dt
         y_new = state.y + v_clamped * math.sin(theta_clamped) * dt
 
-
-
         return VehicleState(x=x_new, y=y_new, theta=theta_clamped, v=v_clamped)
