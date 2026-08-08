@@ -1,6 +1,7 @@
 import math
 
 from offroad_autonomous_navigator.envs.schemas import VehicleAction, VehicleState
+from offroad_autonomous_navigator.utils.geometry import normalize_angle
 
 
 class BicycleModel:
@@ -37,7 +38,7 @@ class BicycleModel:
         v_clamped = max(-self.max_speed, min(self.max_speed, v_new))
 
         theta_new = state.theta + (v_clamped / self.wheelbase) * math.tan(steering_angle) * dt
-        theta_clamped = (theta_new + math.pi) % (2 * math.pi) - math.pi
+        theta_clamped = normalize_angle(theta_new)
 
         x_new = state.x + v_clamped * math.cos(theta_clamped) * dt
         y_new = state.y + v_clamped * math.sin(theta_clamped) * dt
