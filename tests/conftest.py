@@ -31,6 +31,7 @@ def default_reward_config() -> RewardConfig:
         w_border_penalty=1.0,
         w_energy_penalty=0.1,
         w_step_penalty=0.01,
+        goal_reward=100.0,
         border_margin=5.0,
         collision_penalty=100.0,
     )

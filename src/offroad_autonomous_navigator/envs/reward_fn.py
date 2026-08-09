@@ -37,7 +37,7 @@ def penalty_border(
     normalized_distance_to_border = penetration / border_margin
 
     # Quadratic penalty
-    border_penalty = reward_config.w_border_penalty * normalized_distance_to_border**3  
+    border_penalty = reward_config.w_border_penalty * min(1.0, normalized_distance_to_border**3)
 
     return -border_penalty
 
