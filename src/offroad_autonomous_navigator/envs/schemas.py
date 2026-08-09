@@ -17,6 +17,9 @@ class VehicleAction(BaseModel):
     steering_angle: float = Field(..., description="The steering angle of the vehicle in radians.")
     acceleration: float = Field(..., description="The linear acceleration of the vehicle. (m/s^2)")
 
+
+# EnvConfigs to avoid hardcoding parameters in the OffroadEnv class. 
+# This allows for easy configuration and testing of different scenarios
 class EnvConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="OFFROAD_", frozen=True)
 
@@ -72,3 +75,23 @@ class EnvConfig(BaseSettings):
                 f"[{self.map_min_y}, {self.map_max_y}]."
             )
         return self
+
+
+class RewardConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="OFFROAD_REWARD_", frozen=True)
+
+    w_progress: float = Field(default=1.0, gt=0, 
+                            description="Weight for progress towards the goal.")
+    w_border_penalty: float = Field(default=1.0, gt=0, 
+                                    description="Weight for proximity to map bounds.")
+    w_energy_penalty: float = Field(default=1.0, gt=0,
+                            description="Weight for control effort (energy proxy).")
+    w_step_penalty: float = Field(default=0.05, gt=0, 
+                                description="Fixed penalty per step to encourage efficiency.")
+    goal_reward: float = Field(default=100.0, gt=0,
+                            description="Reward for reaching the goal.")
+    collision_penalty: float = Field(default=100.0, gt=0,
+                                    description="Penalty for leaving map boundaries")
+    border_margin: float = Field(default=5.0, gt=0,
+                                description="Distance from bounds where border"
+                                " penalty starts applying (m).")

@@ -1,7 +1,7 @@
 import pytest
 
 from offroad_autonomous_navigator.envs.offroad_env import OffroadEnv
-from offroad_autonomous_navigator.envs.schemas import EnvConfig
+from offroad_autonomous_navigator.envs.schemas import EnvConfig, RewardConfig
 
 
 @pytest.fixture
@@ -23,8 +23,20 @@ def default_config() -> EnvConfig:
         max_episode_steps=100,
     )
 
+@pytest.fixture
+def default_reward_config() -> RewardConfig:
+    """Global fixture that provides a reusable base reward configuration."""
+    return RewardConfig(
+        w_progress=1.0,
+        w_border_penalty=1.0,
+        w_energy_penalty=0.1,
+        w_step_penalty=0.01,
+        border_margin=5.0,
+        collision_penalty=100.0,
+    )
+
 
 @pytest.fixture
-def default_env(default_config: EnvConfig) -> OffroadEnv:
+def default_env(default_config: EnvConfig, default_reward_config: RewardConfig) -> OffroadEnv:
     """Global fixture that provides a ready-to-use OffroadEnv instance."""
-    return OffroadEnv(config=default_config)
+    return OffroadEnv(config=default_config, reward_config=default_reward_config)

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from offroad_autonomous_navigator.envs.offroad_env import OffroadEnv
-from offroad_autonomous_navigator.envs.schemas import EnvConfig
+from offroad_autonomous_navigator.envs.schemas import EnvConfig, RewardConfig
 
 
 def test_reset_returns_valid_observation(default_env: OffroadEnv) -> None:
@@ -21,10 +21,11 @@ def test_step_before_reset_raises_runtime_error(default_env: OffroadEnv) -> None
         default_env.step(zero_action)
 
 
-def test_truncation_on_max_episode_steps(default_config: EnvConfig) -> None:
+def test_truncation_on_max_episode_steps(default_config: EnvConfig, 
+                                        default_reward_config: RewardConfig) -> None:
     """Verifies that reaching max_episode_steps returns truncated=True and terminated=False."""
     config = default_config.model_copy(update={"max_episode_steps": 3})
-    env = OffroadEnv(config=config)
+    env = OffroadEnv(config=config, reward_config=default_reward_config)
     env.reset()
     zero_action = np.array([0.0, 0.0], dtype=np.float32)
 
@@ -40,7 +41,8 @@ def test_truncation_on_max_episode_steps(default_config: EnvConfig) -> None:
     assert truncated_3
 
 
-def test_out_of_bounds_produces_terminated(default_config: EnvConfig) -> None:
+def test_out_of_bounds_produces_terminated(default_config: EnvConfig, 
+                                        default_reward_config: RewardConfig) -> None:
     """Verifies that leaving the map boundaries terminates the episode,
     regardless of orientation."""
     # Extremely tight map bounds in X and Y to force an immediate exit in any direction
@@ -53,7 +55,7 @@ def test_out_of_bounds_produces_terminated(default_config: EnvConfig) -> None:
             "dt": 0.1,
         }
     )
-    env = OffroadEnv(config=config)
+    env = OffroadEnv(config=config, reward_config=default_reward_config)
     env.reset()
 
     # Forward acceleration; it will leave in 1 step regardless of theta
@@ -64,7 +66,8 @@ def test_out_of_bounds_produces_terminated(default_config: EnvConfig) -> None:
     assert not truncated
 
 
-def test_goal_reached_produces_terminated(default_config: EnvConfig) -> None:
+def test_goal_reached_produces_terminated(default_config: EnvConfig, 
+                                        default_reward_config: RewardConfig) -> None:
     """Verifies that being within goal_tolerance produces terminated=True."""
     config = default_config.model_copy(
         update={
@@ -73,7 +76,7 @@ def test_goal_reached_produces_terminated(default_config: EnvConfig) -> None:
             "goal_tolerance": 5.0,
         }
     )
-    env = OffroadEnv(config=config)
+    env = OffroadEnv(config=config, reward_config=default_reward_config)
     env.reset()
 
     zero_action = np.array([0.0, 0.0], dtype=np.float32)
