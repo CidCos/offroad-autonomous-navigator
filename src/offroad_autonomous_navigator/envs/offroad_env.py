@@ -32,10 +32,11 @@ class OffroadEnv(gym.Env[np.ndarray, np.ndarray]):
 
         # Action Space: [steering_angle, acceleration]
         self.action_space = gym.spaces.Box(
-            low=np.array([-config.max_steering_angle, -config.max_acceleration], dtype=np.float32),
-            high=np.array([config.max_steering_angle, config.max_acceleration], dtype=np.float32),
-            dtype=np.float32,
-        )
+                                        low=-1.0, 
+                                        high=1.0,
+                                        shape=(2,), 
+                                        dtype=np.float32
+                                        )
 
         # Observation Space: [v, theta, distance_to_goal, relative_angle_to_goal]
         max_dist = euclidean_distance(config.map_min_x, config.map_min_y, 
@@ -77,10 +78,10 @@ class OffroadEnv(gym.Env[np.ndarray, np.ndarray]):
 
         # Action and state update
         prev_state = self._state
-        vehicle_action = VehicleAction(
-            steering_angle=float(action[0]), 
-            acceleration=float(action[1])
-            )
+        scaled_steering = action[0] * self.config.max_steering_angle  # de [-1,1] a [-max, max]
+        scaled_acceleration = action[1] * self.config.max_acceleration
+        vehicle_action = VehicleAction(steering_angle=float(scaled_steering), 
+                                    acceleration=float(scaled_acceleration))
         new_state = self.vehicle.step(self._state, vehicle_action, self.config.dt)
         self._state = new_state
         # Step count and truncation check
