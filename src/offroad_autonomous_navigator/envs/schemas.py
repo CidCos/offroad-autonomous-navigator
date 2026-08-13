@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+# Schemas 
 class VehicleState(BaseModel):
     model_config = ConfigDict(frozen=True) 
 
@@ -17,9 +18,20 @@ class VehicleAction(BaseModel):
     steering_angle: float = Field(..., description="The steering angle of the vehicle in radians.")
     acceleration: float = Field(..., description="The linear acceleration of the vehicle. (m/s^2)")
 
+class RewardBreakdown(BaseModel):
+    model_config = ConfigDict(frozen=True)
 
-# EnvConfigs to avoid hardcoding parameters in the OffroadEnv class. 
-# This allows for easy configuration and testing of different scenarios
+    reward_progress: float = Field(..., description="Reward for moving closer to the goal.")
+    penalty_border: float = Field(..., description="Penalty for proximity to map bounds.")
+    penalty_energy: float = Field(..., description="Penalty for control effort (energy proxy).")
+    penalty_step: float = Field(..., description="Fixed penalty per step to encourage efficiency.")
+    reward_goal: float = Field(..., description="Reward for reaching the goal.")
+    penalty_collision: float = Field(..., description="Penalty for leaving map boundaries.")
+    total_reward: float = Field(..., description="Total reward for the step, " \
+                                "combining all components.")
+
+# BaseSettings to avoid hardcoding parameters. 
+
 class EnvConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="OFFROAD_", frozen=True)
 
@@ -75,7 +87,6 @@ class EnvConfig(BaseSettings):
                 f"[{self.map_min_y}, {self.map_max_y}]."
             )
         return self
-
 
 class RewardConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="OFFROAD_REWARD_", frozen=True)

@@ -94,7 +94,7 @@ class OffroadEnv(gym.Env[np.ndarray, np.ndarray]):
         terminated = is_out_of_bounds or is_goal_reached
 
         # Compute reward
-        reward = compute_reward(
+        reward, reward_breakdown = compute_reward(
             state=prev_state,
             new_state=new_state,
             action=vehicle_action,
@@ -104,7 +104,19 @@ class OffroadEnv(gym.Env[np.ndarray, np.ndarray]):
             is_out_of_bounds=is_out_of_bounds
         )
 
-        return self._state_to_obs(new_state), reward, terminated, truncated, {}
+        distance_to_goal = euclidean_distance(new_state.x, new_state.y, 
+                                            self.config.goal_x, self.config.goal_y)
+
+        return (self._state_to_obs(new_state), 
+                reward,
+                terminated,
+                truncated, 
+                {"reward_breakdown": reward_breakdown,
+                "distance_to_goal": distance_to_goal,
+                "is_goal_reached": is_goal_reached,
+                "is_out_of_bounds": is_out_of_bounds,
+                "current_step": self.current_step}
+                )
 
     def _is_out_of_bounds(self) -> bool:
         '''Check if the vehicle is out of the defined map boundaries.'''

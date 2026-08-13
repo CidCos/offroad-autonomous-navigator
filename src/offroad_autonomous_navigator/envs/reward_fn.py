@@ -2,6 +2,7 @@
 
 from offroad_autonomous_navigator.envs.schemas import (
     EnvConfig,
+    RewardBreakdown,
     RewardConfig,
     VehicleAction,
     VehicleState,
@@ -84,24 +85,30 @@ def compute_reward(
     reward_config: RewardConfig,
     is_goal_reached: bool,
     is_out_of_bounds: bool,
-) -> float:
+) -> tuple[float, RewardBreakdown]:
     '''Compute the total reward for a step in the OffroadEnv environment.'''
     r_progress = reward_progress(state, new_state, config, reward_config)
     r_border = penalty_border(new_state, config, reward_config)
     r_energy = penalty_energy(action, reward_config)
     r_step = penalty_step(reward_config)
+    r_goal = 0.0
+    r_collision = 0.0
 
     if is_goal_reached:
-        # Large positive reward for reaching the goal
-        return sum([
-            reward_config.goal_reward, r_progress, r_border, r_energy, r_step
-        ])
+        r_goal = reward_config.goal_reward
+
     elif is_out_of_bounds:
-        # Large negative penalty for going out of bounds
-        return sum([
-            -reward_config.collision_penalty, r_progress, r_border, r_energy, r_step
-        ])
+        r_collision = -reward_config.collision_penalty
 
     # Regular step reward
-    return sum([r_progress, r_border, r_energy, r_step])
-    
+    total_reward = sum([r_progress, r_border, r_energy, r_step, r_goal, r_collision])
+
+    return (total_reward, RewardBreakdown(
+        reward_progress=r_progress,
+        penalty_border=r_border,
+        penalty_energy=r_energy,
+        penalty_step=r_step,
+        reward_goal=r_goal,
+        penalty_collision=r_collision,
+        total_reward=total_reward
+    ))

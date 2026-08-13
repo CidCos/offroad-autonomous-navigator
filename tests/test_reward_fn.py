@@ -140,12 +140,19 @@ def test_compute_reward_goal_reached(default_config: EnvConfig,
     r_energy = penalty_energy(action, default_reward_config)
     r_step = penalty_step(default_reward_config)
 
-    total_reward = compute_reward(
+    total_reward, reward_breakdown = compute_reward(
         state, new_state, action, default_config, default_reward_config,
         is_goal_reached=True, is_out_of_bounds=False
     )
 
     assert total_reward == pytest.approx(r_progress + r_border + r_energy + r_step + 100.0) 
+    assert reward_breakdown.reward_progress == pytest.approx(r_progress)
+    assert reward_breakdown.penalty_border == pytest.approx(r_border)
+    assert reward_breakdown.penalty_energy == pytest.approx(r_energy)
+    assert reward_breakdown.penalty_step == pytest.approx(r_step)
+    assert reward_breakdown.reward_goal == pytest.approx(default_reward_config.goal_reward)
+    assert reward_breakdown.penalty_collision == pytest.approx(0.0)
+    assert reward_breakdown.total_reward == pytest.approx(total_reward)
 
 # 9. Compute Reward: is_out_of_bounds
 def test_compute_reward_out_of_bounds(default_config: EnvConfig, 
@@ -159,12 +166,21 @@ def test_compute_reward_out_of_bounds(default_config: EnvConfig,
     r_energy = penalty_energy(action, default_reward_config)
     r_step = penalty_step(default_reward_config)
 
-    total_reward = compute_reward(
+    total_reward, reward_breakdown = compute_reward(
         state, new_state, action, default_config, default_reward_config,
         is_goal_reached=False, is_out_of_bounds=True
     )
 
     assert total_reward == pytest.approx(r_progress + r_border + r_energy + r_step - 100.0) 
+    assert reward_breakdown.reward_progress == pytest.approx(r_progress)
+    assert reward_breakdown.penalty_border == pytest.approx(r_border)
+    assert reward_breakdown.penalty_energy == pytest.approx(r_energy)
+    assert reward_breakdown.penalty_step == pytest.approx(r_step)
+    assert reward_breakdown.reward_goal == pytest.approx(0.0)
+    assert reward_breakdown.penalty_collision == pytest.approx(
+                                                -default_reward_config.collision_penalty
+                                                )
+    assert reward_breakdown.total_reward == pytest.approx(total_reward)
 
 # 11. Compute Reward: Normal step (not goal reached, not out of bounds)
 def test_compute_reward_normal_step(default_config: EnvConfig, 
@@ -178,7 +194,7 @@ def test_compute_reward_normal_step(default_config: EnvConfig,
     r_energy = penalty_energy(action, default_reward_config)
     r_step = penalty_step(default_reward_config)
 
-    total_reward = compute_reward(
+    total_reward, _ = compute_reward(
         state, new_state, action, default_config, default_reward_config,
         is_goal_reached=False, is_out_of_bounds=False
     )
@@ -197,9 +213,15 @@ def test_compute_reward_components(default_config: EnvConfig,
     r_energy = penalty_energy(action, default_reward_config)
     r_step = penalty_step(default_reward_config)
 
-    total_reward = compute_reward(
+    total_reward, reward_breakdown = compute_reward(
         state, new_state, action, default_config, default_reward_config,
         is_goal_reached=False, is_out_of_bounds=False
     )
 
     assert total_reward == pytest.approx(r_progress + r_border + r_energy + r_step)
+    assert reward_breakdown.reward_progress == pytest.approx(r_progress)
+    assert reward_breakdown.penalty_border == pytest.approx(r_border)
+    assert reward_breakdown.penalty_energy == pytest.approx(r_energy)
+    assert reward_breakdown.penalty_step == pytest.approx(r_step)
+    assert reward_breakdown.reward_goal == pytest.approx(0.0)
+    assert reward_breakdown.penalty_collision == pytest.approx(0.0)
