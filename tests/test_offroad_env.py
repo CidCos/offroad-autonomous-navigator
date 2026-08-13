@@ -59,7 +59,7 @@ def test_out_of_bounds_produces_terminated(default_config: EnvConfig,
     env.reset()
 
     # Forward acceleration; it will leave in 1 step regardless of theta
-    max_accel_action = np.array([0.0, config.max_acceleration], dtype=np.float32)
+    max_accel_action = np.array([0.0, 1.0], dtype=np.float32)
     obs, reward, terminated, truncated, info = env.step(max_accel_action)
 
     assert terminated
