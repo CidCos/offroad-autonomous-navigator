@@ -1,8 +1,12 @@
 from pathlib import Path
 
+import wandb
 from stable_baselines3 import PPO
+from stable_baselines3.common.callbacks import CallbackList
 from stable_baselines3.common.env_checker import check_env
+from wandb.integration.sb3 import WandbCallback
 
+from experiments.callbacks import RewardBreakdownCallback
 from offroad_autonomous_navigator.envs.offroad_env import OffroadEnv
 from offroad_autonomous_navigator.envs.schemas import EnvConfig, RewardConfig
 from offroad_autonomous_navigator.utils.config_loader import load_settings_from_yaml
@@ -21,12 +25,34 @@ if __name__ == "__main__":
     check_env(env, warn=True) 
     print("Environment check passed.")
 
+    total_timesteps = 200_000
+
+    run = wandb.init(
+        project="offroad-autonomous-navigator",
+        config={
+            "total_timesteps": total_timesteps,
+            "env_config": env.config.model_dump(),
+            "reward_config": env.reward_config.model_dump(),
+        },
+        sync_tensorboard=True,
+    )
+
     model = PPO(
         policy="MlpPolicy",
         env=env,
         verbose=1,
-        tensorboard_log= None
+        tensorboard_log= f"runs/{run.id}",
     )
 
-    model.learn(total_timesteps=20_000)
+    model.learn(total_timesteps=total_timesteps,
+                callback=CallbackList([
+                    WandbCallback(
+                        gradient_save_freq=100,
+                        model_save_path=f"models/{run.id}", 
+                        verbose=2, 
+                    ),
+                    RewardBreakdownCallback(),
+                ]))
+
+    run.finish()
     print("Training completed.")
