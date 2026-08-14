@@ -11,6 +11,7 @@ class RewardBreakdownCallback(BaseCallback):
             if "reward_breakdown" in info:
                 breakdown = info["reward_breakdown"]
                 wandb.log({
+                    "global_step": self.num_timesteps,
                     "reward/progress": breakdown.reward_progress,
                     "reward/border_penalty": breakdown.penalty_border,
                     "reward/energy_penalty": breakdown.penalty_energy,
@@ -18,6 +19,6 @@ class RewardBreakdownCallback(BaseCallback):
                     "reward/goal_bonus": breakdown.reward_goal,
                     "reward/collision_penalty": breakdown.penalty_collision,
                     "distance_to_goal": info["distance_to_goal"]
-                },
-                step=self.num_timesteps)
+                }
+                )
         return True

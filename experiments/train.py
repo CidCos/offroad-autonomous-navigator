@@ -25,7 +25,7 @@ if __name__ == "__main__":
     check_env(env, warn=True) 
     print("Environment check passed.")
 
-    total_timesteps = 200_000
+    total_timesteps = 5_000
 
     run = wandb.init(
         project="offroad-autonomous-navigator",
@@ -36,6 +36,11 @@ if __name__ == "__main__":
         },
         sync_tensorboard=True,
     )
+
+    # 
+    run.define_metric("global_step")
+    run.define_metric("reward/*", step_metric="global_step")
+    run.define_metric("distance_to_goal", step_metric="global_step")
 
     model = PPO(
         policy="MlpPolicy",
