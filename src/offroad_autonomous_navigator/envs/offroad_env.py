@@ -6,6 +6,7 @@ import gymnasium as gym
 import numpy as np
 
 from offroad_autonomous_navigator.envs.kinematics import BicycleModel
+from offroad_autonomous_navigator.envs.observation import state_to_observation
 from offroad_autonomous_navigator.envs.reward_fn import compute_reward
 from offroad_autonomous_navigator.envs.schemas import (
     EnvConfig,
@@ -13,7 +14,7 @@ from offroad_autonomous_navigator.envs.schemas import (
     VehicleAction,
     VehicleState,
 )
-from offroad_autonomous_navigator.utils.geometry import euclidean_distance, normalize_angle
+from offroad_autonomous_navigator.utils.geometry import euclidean_distance
 
 
 class OffroadEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -57,18 +58,7 @@ class OffroadEnv(gym.Env[np.ndarray, np.ndarray]):
         return self._state_to_obs(self._state), {}
 
     def _state_to_obs(self, state: VehicleState) -> np.ndarray:
-        '''Convert the VehicleState to an observation array for the RL agent.'''
-        distance_to_goal = euclidean_distance(state.x, state.y, 
-                                            self.config.goal_x, self.config.goal_y)
-        raw_angle = (
-            math.atan2(self.config.goal_y - state.y,
-                        self.config.goal_x - state.x)
-            - state.theta
-            )
-        relative_angle_to_goal = normalize_angle(raw_angle)
-
-        return np.array([state.v, state.theta, distance_to_goal, relative_angle_to_goal]
-                        , dtype=np.float32)
+        return state_to_observation(state, self.config)
 
     def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
         '''Update the environment state based on the action taken by the agent.'''
