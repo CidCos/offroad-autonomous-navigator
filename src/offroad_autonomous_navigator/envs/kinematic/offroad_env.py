@@ -5,9 +5,12 @@ from typing import Any
 import gymnasium as gym
 import numpy as np
 
-from offroad_autonomous_navigator.envs.kinematics import BicycleModel
-from offroad_autonomous_navigator.envs.observation import scale_action, state_to_observation
-from offroad_autonomous_navigator.envs.reward_fn import compute_reward
+from offroad_autonomous_navigator.envs.kinematic.kinematics import BicycleModel
+from offroad_autonomous_navigator.envs.kinematic.observation import (
+    scale_action,
+    state_to_observation,
+)
+from offroad_autonomous_navigator.envs.kinematic.reward_fn import compute_reward
 from offroad_autonomous_navigator.envs.schemas import (
     EnvConfig,
     RewardConfig,

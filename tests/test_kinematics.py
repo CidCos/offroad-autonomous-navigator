@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from offroad_autonomous_navigator.envs.kinematics import BicycleModel
+from offroad_autonomous_navigator.envs.kinematic.kinematics import BicycleModel
 from offroad_autonomous_navigator.envs.schemas import VehicleAction, VehicleState
 
 

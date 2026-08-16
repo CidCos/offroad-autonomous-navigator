@@ -1,6 +1,9 @@
 import mlflow.pyfunc
 
-from offroad_autonomous_navigator.envs.observation import scale_action, state_to_observation
+from offroad_autonomous_navigator.envs.kinematic.observation import (
+    scale_action,
+    state_to_observation,
+)
 from offroad_autonomous_navigator.envs.schemas import EnvConfig, VehicleAction, VehicleState
 
 MODEL_URI = "models:/offroad-agent@production"

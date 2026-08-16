@@ -1,7 +1,7 @@
 
 import pytest
 
-from offroad_autonomous_navigator.envs.reward_fn import (
+from offroad_autonomous_navigator.envs.kinematic.reward_fn import (
     compute_reward,
     penalty_border,
     penalty_energy,

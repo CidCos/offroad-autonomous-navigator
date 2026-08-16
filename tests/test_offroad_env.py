@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from offroad_autonomous_navigator.envs.offroad_env import OffroadEnv
+from offroad_autonomous_navigator.envs.kinematic.offroad_env import OffroadEnv
 from offroad_autonomous_navigator.envs.schemas import EnvConfig, RewardConfig
 
 

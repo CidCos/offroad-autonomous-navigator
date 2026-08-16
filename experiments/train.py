@@ -7,7 +7,7 @@ from stable_baselines3.common.env_checker import check_env
 from wandb.integration.sb3 import WandbCallback
 
 from experiments.callbacks import RewardBreakdownCallback
-from offroad_autonomous_navigator.envs.offroad_env import OffroadEnv
+from offroad_autonomous_navigator.envs.kinematic.offroad_env import OffroadEnv
 from offroad_autonomous_navigator.envs.schemas import EnvConfig, RewardConfig
 from offroad_autonomous_navigator.utils.config_loader import load_settings_from_yaml
 
