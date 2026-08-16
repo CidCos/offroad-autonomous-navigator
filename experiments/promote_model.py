@@ -2,7 +2,7 @@ import mlflow
 from mlflow import MlflowClient
 
 MODEL_NAME = "offroad-agent"
-VERSION_TO_PROMOTE = "1"
+VERSION_TO_PROMOTE = "3"
 ALIAS = "production"
 
 if __name__ == "__main__":

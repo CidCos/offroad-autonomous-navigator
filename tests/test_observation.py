@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pytest
 
-from offroad_autonomous_navigator.envs.observation import state_to_observation
+from offroad_autonomous_navigator.envs.observation import scale_action, state_to_observation
 from offroad_autonomous_navigator.envs.schemas import EnvConfig, VehicleState
 from offroad_autonomous_navigator.utils.geometry import euclidean_distance, normalize_angle
 
@@ -52,7 +52,7 @@ def test_state_to_observation_negative_coordinates(default_config: EnvConfig) ->
     assert obs[2] == pytest.approx(expected_distance)  # Distance to goal
     assert obs[3] == pytest.approx(expected_angle)  # Relative angle to goal
 
-# Check 0 goal distance
+# 5. Check observation when at goal
 def test_state_to_observation_at_goal() -> None:
     state = VehicleState(x=20.0, y=20.0, theta=0.0, v=0.0)
     config = EnvConfig(
@@ -72,3 +72,14 @@ def test_state_to_observation_at_goal() -> None:
     )
     obs = state_to_observation(state, config)
     assert obs[2] == pytest.approx(0.0)  # Distance to goal
+
+# 6. Check scale_action function
+def test_scale_action(default_config: EnvConfig) -> None:
+    normalized_action = np.array([0.5, -0.5], dtype=np.float32)
+    vehicle_action = scale_action(normalized_action, default_config)
+    
+    expected_steering_angle = 0.5 * default_config.max_steering_angle
+    expected_acceleration = -0.5 * default_config.max_acceleration
+    
+    assert vehicle_action.steering_angle == pytest.approx(expected_steering_angle)
+    assert vehicle_action.acceleration == pytest.approx(expected_acceleration)

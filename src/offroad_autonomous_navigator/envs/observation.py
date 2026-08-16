@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 
-from offroad_autonomous_navigator.envs.schemas import EnvConfig, VehicleState
+from offroad_autonomous_navigator.envs.schemas import EnvConfig, VehicleAction, VehicleState
 from offroad_autonomous_navigator.utils.geometry import euclidean_distance, normalize_angle
 
 
@@ -19,3 +19,13 @@ def state_to_observation(state: VehicleState, config: EnvConfig) -> np.ndarray:
 
     return np.array([state.v, state.theta, distance_to_goal, relative_angle_to_goal]
                     , dtype=np.float32)
+
+
+def scale_action(normalized_action: np.ndarray, config: EnvConfig) -> VehicleAction:
+    """Convert a normalized [-1, 1] action into physical VehicleAction units."""
+    scaled_steering = normalized_action[0] * config.max_steering_angle
+    scaled_acceleration = normalized_action[1] * config.max_acceleration
+    return VehicleAction(
+        steering_angle=float(scaled_steering),
+        acceleration=float(scaled_acceleration),
+    )

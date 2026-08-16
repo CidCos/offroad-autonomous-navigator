@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 
 import mlflow
+import numpy as np
 import wandb
 from mlflow.models import infer_signature
 from mlflow.pyfunc.model import PythonModel, PythonModelContext
@@ -55,8 +56,10 @@ if __name__ == "__main__":
         mlflow.log_metric("final_ep_len_mean", metrics["ep_len_mean"])
         mlflow.set_tag("description", "Baseline PPO, 200k steps, simple kinematics, no obstacles")
 
-        example_input = [[5.0, 0.0, 20.0, 0.3]]  # [v, theta, distance_to_goal, relative_angle]
-        example_output = [[0.5, 0.1]]  # [steering_angle, acceleration] normalizado
+        # [v, theta, distance_to_goal, relative_angle]
+        example_input = np.array([[5.0, 0.0, 20.0, 0.3]], dtype=np.float32) 
+        # [steering_angle, acceleration] normalizado
+        example_output = np.array([[0.5, 0.1]], dtype=np.float32) 
 
         mlflow.pyfunc.log_model(
             name="model",

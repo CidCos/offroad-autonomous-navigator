@@ -6,12 +6,11 @@ import gymnasium as gym
 import numpy as np
 
 from offroad_autonomous_navigator.envs.kinematics import BicycleModel
-from offroad_autonomous_navigator.envs.observation import state_to_observation
+from offroad_autonomous_navigator.envs.observation import scale_action, state_to_observation
 from offroad_autonomous_navigator.envs.reward_fn import compute_reward
 from offroad_autonomous_navigator.envs.schemas import (
     EnvConfig,
     RewardConfig,
-    VehicleAction,
     VehicleState,
 )
 from offroad_autonomous_navigator.utils.geometry import euclidean_distance
@@ -68,10 +67,7 @@ class OffroadEnv(gym.Env[np.ndarray, np.ndarray]):
 
         # Action and state update
         prev_state = self._state
-        scaled_steering = action[0] * self.config.max_steering_angle  # de [-1,1] a [-max, max]
-        scaled_acceleration = action[1] * self.config.max_acceleration
-        vehicle_action = VehicleAction(steering_angle=float(scaled_steering), 
-                                    acceleration=float(scaled_acceleration))
+        vehicle_action = scale_action(action, self.config)
         new_state = self.vehicle.step(self._state, vehicle_action, self.config.dt)
         self._state = new_state
         # Step count and truncation check
