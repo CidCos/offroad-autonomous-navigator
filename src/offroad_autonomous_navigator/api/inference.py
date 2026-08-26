@@ -1,6 +1,6 @@
 import mlflow.pyfunc
 
-from offroad_autonomous_navigator.envs.kinematic.observation import (
+from offroad_autonomous_navigator.envs.observation import (
     scale_action,
     state_to_observation,
 )
