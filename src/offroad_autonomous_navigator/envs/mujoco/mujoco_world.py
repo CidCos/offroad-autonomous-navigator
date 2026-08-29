@@ -2,7 +2,9 @@ import math
 from pathlib import Path
 
 import mujoco
+import numpy as np
 
+from offroad_autonomous_navigator.envs.mujoco.sensors import DepthCamera
 from offroad_autonomous_navigator.envs.schemas import VehicleAction, VehicleState
 
 VEHICLE_XML_PATH = Path(__file__).resolve().parents[4] / "assets" / "mujoco" / "vehicle.xml"
@@ -10,12 +12,13 @@ print(f"Using vehicle XML path: {VEHICLE_XML_PATH}")
 
 class MujocoWorld:
     """Physics simulation of the offroad vehicle using MuJoCo."""
-
     def __init__(
         self,
         xml_path: Path = VEHICLE_XML_PATH,
         decision_dt: float = 0.1,
         max_speed: float = 10.0,
+        camera_name: str = "front_depth_cam",
+        depth_max_range: float = 10.0,
     ) -> None:
         self.model = mujoco.MjModel.from_xml_path(str(xml_path))
         self.data = mujoco.MjData(self.model)
@@ -23,6 +26,7 @@ class MujocoWorld:
         self.n_substeps = round(decision_dt / self.physics_timestep)
         self.max_speed = max_speed
         self._velocity_target = 0.0
+        self.camera = DepthCamera(self.model, camera_name, max_range=depth_max_range)
 
     def reset(self) -> VehicleState:
         mujoco.mj_resetData(self.model, self.data)
@@ -54,6 +58,10 @@ class MujocoWorld:
         speed = math.hypot(vx, vy)
 
         return VehicleState(x=float(x), y=float(y), theta=float(theta), v=float(speed))
+
+    def render_depth(self) -> np.ndarray:
+        """Return the current depth image from the vehicle's front camera."""
+        return self.camera.render(self.data)
 
 if __name__ == "__main__":
     world = MujocoWorld()

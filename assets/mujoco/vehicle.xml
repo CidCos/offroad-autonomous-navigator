@@ -13,9 +13,8 @@
     <body name="chassis" pos="0 0 0.3">
       <freejoint/>
       <geom name="chassis_geom" type="box" size="0.3 0.2 0.1" rgba="0.2 0.4 0.8 1" mass="5"/>
-
-      <!-- Front left wheel: steering joint + rolling joint -->
-      <body name="steer_fl" pos="0.25 0.22 -0.1">
+      <camera name="front_depth_cam" pos="0.6 0 0.2" xyaxes="0 -1 0  0.2 0 1"/>      
+        <body name="steer_fl" pos="0.25 0.22 -0.1">
         <joint name="steer_fl_joint" type="hinge" axis="0 0 1" range="-0.5 0.5"/>
         <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
         <body name="wheel_fl" pos="0 0 0">
