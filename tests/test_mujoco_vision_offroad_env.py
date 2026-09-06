@@ -27,7 +27,7 @@ def test_reset_returns_valid_observation(vision_env: MujocoOffroadEnvVision) -> 
     assert isinstance(obs, dict)
     assert set(obs.keys()) == {"depth", "vector"}
     assert vision_env.observation_space.contains(obs)
-    assert obs["depth"].shape == (64, 64)
+    assert obs["depth"].shape == (1, 64, 64)
     assert obs["depth"].dtype == np.float32
     assert obs["vector"].shape == (4,)
     assert obs["vector"].dtype == np.float32

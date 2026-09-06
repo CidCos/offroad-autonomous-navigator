@@ -34,7 +34,7 @@ class MujocoOffroadEnvVision(gym.Env[dict[str, np.ndarray], np.ndarray]):
         )
         self.observation_space = gym.spaces.Dict({
             "depth": gym.spaces.Box(
-                low=0.0, high=1.0, shape=(image_size, image_size), dtype=np.float32
+                low=0.0, high=1.0, shape=(1, image_size, image_size), dtype=np.float32
             ),
             "vector": gym.spaces.Box(
                 low=np.array([-config.max_speed, -math.pi, 0.0, -math.pi], dtype=np.float32),
@@ -98,8 +98,7 @@ class MujocoOffroadEnvVision(gym.Env[dict[str, np.ndarray], np.ndarray]):
 
     def _build_observation(self, state: VehicleState) -> dict[str, np.ndarray]:
         """Combine the depth image with vehicle/goal state into the Dict observation."""
-        depth = self.vehicle.render_depth()
-
+        depth = self.vehicle.render_depth()[np.newaxis, :, :]
         vector = state_to_observation(state, self.config)
         return {"depth": depth, "vector": vector}
 
